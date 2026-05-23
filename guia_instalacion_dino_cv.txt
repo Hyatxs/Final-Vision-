@@ -1,0 +1,263 @@
+GUÍA DE INSTALACIÓN Y EJECUCIÓN
+Sistema Dino con Visión por Computadora
+
+1. Requisitos generales
+
+Para ejecutar el proyecto se necesita una computadora con Windows, Python instalado y el navegador Google Chrome. El juego se ejecuta desde la dirección:
+
+chrome://dino
+
+El sistema no modifica el juego ni accede a su código fuente. Solo captura la pantalla, procesa los frames y simula teclas para saltar o agacharse.
+
+2. Instalar Python
+
+Primero se debe tener instalado Python. En este proyecto se utilizó Python 3.13, pero también puede funcionar con versiones recientes de Python 3.
+
+Para verificar que Python está instalado, abrir CMD y escribir:
+
+python --version
+
+O, si se tiene instalado en una ruta específica:
+
+c:/python313/python.exe --version
+
+Si aparece la versión de Python, entonces ya está instalado correctamente.
+
+3. Abrir la carpeta del proyecto
+
+Descomprimir la carpeta del proyecto, por ejemplo:
+
+FinalvaDino
+
+Después abrir CMD dentro de esa carpeta o entrar con:
+
+cd C:\Users\Pc\Downloads\FinalvaDino
+
+La carpeta debe contener archivos similares a estos:
+
+main.py
+config_dino.json
+dino/
+resultados_dino/
+
+Dentro de la carpeta dino deben estar los módulos del proyecto, por ejemplo:
+
+bot.py
+calibracion.py
+captura.py
+configuracion.py
+control.py
+detectores.py
+metricas.py
+procesamiento.py
+puntaje.py
+visualizacion.py
+
+4. Instalar librerías necesarias
+
+Desde CMD, dentro de la carpeta del proyecto, instalar las librerías con:
+
+pip install opencv-python numpy mss pyautogui
+
+Si se usa Python desde una ruta específica, ejecutar:
+
+c:/python313/python.exe -m pip install opencv-python numpy mss pyautogui
+
+Estas librerías se usan para:
+
+opencv-python: procesamiento de imágenes, umbralización, contornos y visualización.
+numpy: manejo de matrices e imágenes.
+mss: captura rápida de pantalla.
+pyautogui: control del teclado para saltar y agacharse.
+
+5. Abrir el juego del dinosaurio
+
+Abrir Google Chrome y escribir en la barra de direcciones:
+
+chrome://dino
+
+Dejar visible la pantalla del juego. Es recomendable no mover la ventana ni cambiar su tamaño después de calibrar.
+
+6. Calibrar el sistema
+
+Antes de ejecutar el bot, se debe calibrar la zona del juego. En CMD ejecutar:
+
+c:/python313/python.exe main.py --calibrar
+
+O si Python está agregado al PATH:
+
+python main.py --calibrar
+
+El programa pedirá seleccionar cuatro zonas:
+
+1. Zona completa del juego.
+2. Dinosaurio.
+3. ROI frente al dinosaurio.
+4. Zona del puntaje actual.
+
+Para seleccionar cada zona:
+
+- Arrastrar con el mouse para dibujar el rectángulo.
+- Presionar ENTER o SPACE para aceptar.
+- No presionar ENTER sin haber seleccionado la región.
+
+Recomendaciones de calibración:
+
+Zona completa del juego:
+Seleccionar solo el área del juego, sin incluir la barra de Chrome.
+
+Dinosaurio:
+Seleccionar únicamente el dinosaurio completo, incluyendo cabeza, cuerpo, patas y cola.
+
+ROI:
+Seleccionar una región frente al dinosaurio, donde pasan los cactus y aves. No debe estar demasiado arriba para evitar detectar nubes.
+
+Puntaje:
+Seleccionar solo los cinco números del puntaje actual de la derecha. No incluir HI ni el récord.
+
+Al terminar, se crea o actualiza el archivo:
+
+config_dino.json
+
+7. Probar sin control del teclado
+
+Antes de dejar que el programa controle el juego, se recomienda probar solo la detección:
+
+c:/python313/python.exe main.py --metodo contornos --sin-control
+
+También se puede probar el método de píxeles:
+
+c:/python313/python.exe main.py --metodo pixeles --sin-control
+
+En este modo el programa muestra la detección, pero no salta ni se agacha. Sirve para revisar si la ROI, la imagen binaria y la detección están funcionando correctamente.
+
+8. Ejecutar el bot con control automático
+
+Cuando la detección funcione correctamente, ejecutar:
+
+c:/python313/python.exe main.py --metodo contornos
+
+Después dar clic en el juego del dinosaurio y presionar SPACE para iniciar la partida.
+
+El programa empezará a capturar la pantalla, detectar obstáculos y mandar acciones al teclado:
+
+SPACE: saltar.
+DOWN: agacharse.
+
+También se puede ejecutar con el método por píxeles:
+
+c:/python313/python.exe main.py --metodo pixeles
+
+9. Teclas durante la ejecución
+
+Durante la prueba se pueden usar estas teclas en la ventana de OpenCV:
+
+q o ESC: terminar la prueba.
+p: pausar o reanudar.
+f: registrar falso positivo.
+n: registrar falso negativo.
+
+10. Resultados y métricas
+
+Al finalizar una prueba, el sistema guarda los resultados en:
+
+resultados_dino/resumen_pruebas.csv
+
+Las métricas registradas son:
+
+- FPS promedio.
+- Tiempo de supervivencia.
+- Puntaje detectado.
+- Número de detecciones.
+- Saltos realizados.
+- Agachadas realizadas.
+- Falsos positivos.
+- Falsos negativos.
+
+11. Ver resumen de pruebas
+
+Para mostrar el resumen de resultados, ejecutar:
+
+c:/python313/python.exe main.py --resumen
+
+Si se tiene un archivo adicional para comparar métodos, también puede ejecutarse según el nombre que tenga, por ejemplo:
+
+c:/python313/python.exe comparar_metodos.py
+
+12. Problemas comunes
+
+Error: No existe archivo de calibración
+
+Solución:
+Ejecutar primero:
+
+c:/python313/python.exe main.py --calibrar
+
+Error: attempted relative import with no known parent package
+
+Causa:
+Se está ejecutando directamente un archivo dentro de la carpeta dino, por ejemplo:
+
+c:/python313/python.exe dino/calibracion.py
+
+Solución:
+Siempre ejecutar desde main.py:
+
+c:/python313/python.exe main.py --calibrar
+
+El bot detecta nubes o montículos
+
+Solución:
+Volver a calibrar la ROI. La ROI debe estar frente al dinosaurio y no demasiado arriba. También revisar que el preprocesamiento tenga filtros para nubes, montículos y cambio día/noche.
+
+El puntaje se detecta mal
+
+Solución:
+Volver a calibrar la zona del puntaje seleccionando solo los números del puntaje actual, no incluir HI ni el récord.
+
+El dinosaurio se levanta antes al agacharse
+
+Solución:
+Revisar el archivo control.py y aumentar ligeramente el tiempo de agachado, por ejemplo de 0.30 a 0.35 segundos.
+
+13. Orden recomendado de uso
+
+1. Abrir Chrome en chrome://dino.
+2. Entrar a la carpeta del proyecto.
+3. Instalar librerías.
+4. Ejecutar calibración.
+5. Probar detección sin control.
+6. Ejecutar el bot con control automático.
+7. Guardar resultados.
+8. Comparar método de contornos contra método de píxeles.
+
+14. Comandos principales
+
+Instalar librerías:
+
+c:/python313/python.exe -m pip install opencv-python numpy mss pyautogui
+
+Calibrar:
+
+c:/python313/python.exe main.py --calibrar
+
+Probar contornos sin control:
+
+c:/python313/python.exe main.py --metodo contornos --sin-control
+
+Ejecutar contornos con control:
+
+c:/python313/python.exe main.py --metodo contornos
+
+Probar píxeles sin control:
+
+c:/python313/python.exe main.py --metodo pixeles --sin-control
+
+Ejecutar píxeles con control:
+
+c:/python313/python.exe main.py --metodo pixeles
+
+Ver resumen:
+
+c:/python313/python.exe main.py --resumen
+
